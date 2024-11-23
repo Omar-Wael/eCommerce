@@ -37,7 +37,7 @@ class OrderController extends Controller
 
     public function generateInvoice($order_id)
     {
-        $order = Order::findOrFail($order_id);
+        $order = Order::findOrFail($order_id)->load('products', 'user');
         try {
             // Render the HTML content for the invoice
             $html = view('invoice', ['order' => $order])->render();

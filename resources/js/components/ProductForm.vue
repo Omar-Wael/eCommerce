@@ -58,32 +58,59 @@ export default {
 </script> -->
 <template>
     <div class="product-form">
-        <h2>{{ isEdit ? "Edit Product" : "Add Product" }}</h2>
+        <h2>{{ isEdit ? "تعديل المنتج" : "إضافة منتج" }}</h2>
         <form @submit.prevent="handleSubmit">
             <!-- Product Name -->
             <div class="mb-3">
-                <label for="name" class="form-label">Product Name</label>
-                <input type="text" id="name" v-model="product.name" class="form-control" required />
+                <label for="name" class="form-label">اسم المنتج</label>
+                <input
+                    type="text"
+                    id="name"
+                    v-model="product.name"
+                    class="form-control"
+                    required
+                />
             </div>
 
             <!-- Product Description -->
             <div class="mb-3">
-                <label for="description" class="form-label">Description</label>
-                <textarea id="description" v-model="product.description" class="form-control" required></textarea>
+                <label for="description" class="form-label">الوصف</label>
+                <textarea
+                    id="description"
+                    v-model="product.description"
+                    class="form-control"
+                    required
+                ></textarea>
             </div>
 
             <!-- Product Price -->
             <div class="mb-3">
-                <label for="price" class="form-label">Price</label>
-                <input type="number" id="price" v-model="product.price" step="0.01" class="form-control" required />
+                <label for="price" class="form-label">السعر</label>
+                <input
+                    type="number"
+                    id="price"
+                    v-model="product.price"
+                    step="0.01"
+                    class="form-control"
+                    required
+                />
             </div>
 
             <!-- Category ID Field -->
             <div class="mb-3">
-                <label for="category_id" class="form-label">Category</label>
-                <select id="category_id" v-model="product.category_id" class="form-select" required>
-                    <option value="" disabled>Select a category</option>
-                    <option v-for="category in categories" :key="category.id" :value="category.id">
+                <label for="category_id" class="form-label">الفئة</label>
+                <select
+                    id="category_id"
+                    v-model="product.category_id"
+                    class="form-select"
+                    required
+                >
+                    <option value="" disabled>اختر فئة</option>
+                    <option
+                        v-for="category in categories"
+                        :key="category.id"
+                        :value="category.id"
+                    >
                         {{ category.name }}
                     </option>
                 </select>
@@ -91,12 +118,17 @@ export default {
 
             <!-- Product Image -->
             <div class="mb-3">
-                <label for="image" class="form-label">Product Image</label>
-                <input type="file" id="image" @change="handleImageUpload" class="form-control" />
+                <label for="image" class="form-label">صورة المنتج</label>
+                <input
+                    type="file"
+                    id="image"
+                    @change="handleImageUpload"
+                    class="form-control"
+                />
             </div>
 
             <button type="submit" class="btn btn-primary">
-                {{ isEdit ? "Update Product" : "Add Product" }}
+                {{ isEdit ? "تحديث المنتج" : "إضافة المنتج" }}
             </button>
         </form>
     </div>
@@ -158,7 +190,7 @@ export default {
             })
                 .then(() => {
                     this.$emit("product-saved");
-                    alert("Product saved successfully!");
+                    alert("تم حفظ المنتج بنجاح!");
                     this.$router.push("/");
                 })
                 .catch((error) => {
@@ -176,5 +208,6 @@ export default {
 .product-form {
     max-width: 600px;
     margin: 0 auto;
+    direction: rtl; /* Right-to-left layout for Arabic */
 }
 </style>

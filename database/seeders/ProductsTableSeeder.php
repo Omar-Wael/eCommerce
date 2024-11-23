@@ -6,6 +6,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Product;
 use Faker\Factory as Faker;
+use App\Models\Category;
 
 class ProductsTableSeeder extends Seeder
 {
@@ -14,16 +15,20 @@ class ProductsTableSeeder extends Seeder
      */
     public function run(): void
     {
-        $faker = Faker::create();
+        // $faker = Faker::create();
 
-        foreach (range(1, 20) as $index) {
-            Product::create([
-                'name' => $faker->word, // Random product name
-                'description' => $faker->sentence, // Random description
-                'price' => $faker->randomFloat(2, 10, 1000), // Random price between 10 and 1000
-                'image' => $faker->imageUrl(640, 480, 'products', true), // Random product image URL
-                'category_id' => rand(1, 5), // Assuming categories have IDs 1-5
-            ]);
-        }
+        // $categories = Category::all();
+
+        // foreach ($categories as $category) {
+        //     for ($i = 0; $i < 10; $i++) {
+        //         Product::create([
+        //             'name' => $faker->word,
+        //             'description' => $faker->sentence,
+        //             'price' => $faker->randomFloat(2, 10, 500),
+        //             'category_id' => $category->id,
+        //         ]);
+        //     }
+        // }
+        Product::factory(50)->create();
     }
 }

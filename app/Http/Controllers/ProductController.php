@@ -4,12 +4,24 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Models\Category;
 
 class ProductController extends Controller
 {
     public function index()
     {
-        return response()->json(Product::with('category')->get());
+        $categories = Category::all(); // Fetch all categories
+        return view('products.index', compact('categories'));
+    }
+
+    public function categories()
+    {
+        return response()->json(Category::all());
+    }
+
+    public function productsByCategory($categoryId)
+    {
+        return response()->json(Product::where('category_id', $categoryId)->get());
     }
 
     public function store(Request $request)

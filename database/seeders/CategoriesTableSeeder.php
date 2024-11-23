@@ -3,9 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Category;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Faker\Factory as Faker;
 
 class CategoriesTableSeeder extends Seeder
 {
@@ -14,11 +12,17 @@ class CategoriesTableSeeder extends Seeder
      */
     public function run(): void
     {
-        $faker = Faker::create();
+        $categories = [
+            'إلكترونيات',
+            'أثاث',
+            'ملابس',
+            'كتب',
+            'مواد غذائية',
+        ];
 
-        foreach (range(1, 5) as $index) {
+        foreach ($categories as $category) {
             Category::create([
-                'name' => $faker->word, // Random word as category name
+                'name' => $category,
             ]);
         }
     }

@@ -1,60 +1,80 @@
 <template>
-    <div class="container">
-        <h1>Shopping Cart</h1>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Name</th>
-                    <th>Quantity</th>
-                    <th>Price</th>
-                    <th>Total</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="item in cart" :key="item.id">
-                    <td>{{ item.name }}</td>
-                    <td>{{ item.quantity }}</td>
-                    <td>{{ item.price }}</td>
-                    <td>{{ item.quantity * item.price }}</td>
-                    <td>
-                        <button @click="removeFromCart(item.id)" class="btn btn-danger">Remove</button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <p>Total: {{ total }}</p>
+    <div>
+        <h3 class="text-center mb-4">سلة المشتريات</h3>
+        <div v-if="cartItems.length > 0">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>المنتج</th>
+                        <th>الكمية</th>
+                        <th>السعر</th>
+                        <th>الإجمالي</th>
+                        <th>إجراءات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="item in cartItems" :key="item.id">
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ item.price }}</td>
+                        <td>{{ item.total }}</td>
+                        <td>
+                            <button
+                                class="btn btn-danger btn-sm"
+                                @click="removeFromCart(item.id)"
+                            >
+                                حذف
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="text-end">
+                <strong>الإجمالي: {{ cartTotal }} جنيه</strong>
+            </div>
+        </div>
+        <div v-else>
+            <p class="text-center">سلة المشتريات فارغة.</p>
+        </div>
     </div>
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
 
 export default {
     data() {
         return {
-            cart: [],
+            cartItems: [], // Initialize as an empty array
+            cartTotal: 0, // Initialize as zero
         };
     },
-    computed: {
-        total() {
-            return this.cart.reduce((sum, item) => sum + item.quantity * item.price, 0);
-        },
+    async created() {
+        try {
+            await this.fetchCartItems();
+        } catch (error) {
+            console.error("Error during component creation:", error);
+        }
     },
     methods: {
-        fetchCart() {
-            axios.get('/api/cart').then(response => {
-                this.cart = response.data;
-            });
+        async fetchCartItems() {
+            try {
+                const response = await axios.get("/cart");
+                this.cartItems = response.data.items || [];
+                this.cartTotal = response.data.total || 0;
+            } catch (error) {
+                console.error("Error fetching cart items:", error);
+            }
         },
-        removeFromCart(id) {
-            axios.delete(`/api/cart/${id}`).then(() => {
-                this.fetchCart();
-            });
+        async removeFromCart(itemId) {
+            try {
+                await axios.delete(`/cart/${itemId}`);
+                alert("تم الحذف من السلة.");
+                await this.fetchCartItems(); // Refresh cart
+            } catch (error) {
+                console.error("Error removing item from cart:", error);
+            }
         },
-    },
-    mounted() {
-        this.fetchCart();
     },
 };
 </script>

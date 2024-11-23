@@ -1,56 +1,38 @@
 <template>
-    <div class="container">
-        <h1>Product List</h1>
+    <div>
+        <h3 class="text-center mb-4">المنتجات للفئة: {{ categoryName }}</h3>
         <div class="row">
-            <div v-for="product in products" :key="product.id" class="col-md-4 mb-2">
-                <div class="card">
-                    <img :src="product.image" class="card-img-top" :alt="product.name">
+            <div class="col-md-4" v-for="product in products" :key="product.id">
+                <div class="card mb-3">
+                    <img
+                        v-if="product.image"
+                        :src="product.image"
+                        class="card-img-top"
+                        :alt="product.name"
+                    />
                     <div class="card-body">
                         <h5 class="card-title">{{ product.name }}</h5>
                         <p class="card-text">{{ product.description }}</p>
-                        <p class="card-text">{{ product.price }} SAR</p>
-                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                            :data-bs-target="'#modal' + product.id">Add to Cart</button>
-                    </div>
-                </div>
-                <div class="modal fade" :id="'modal' + product.id" tabindex="-1"
-                    :aria-labelledby="'modalLabel' + product.id" aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title fs-5" :id="'modalLabel' + product.id">Add Product <em>{{
-                                    product.name
-                                        }}</em> to Cart</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body d-flex flex-column gap-2">
-                                <div class="form-group">
-                                    <label for="name">Product Name:</label>
-                                    <input type="text" id="name" v-model="product.name" class="form-control" readonly>
-                                </div>
-                                <div class="form-group">
-                                    <label for="description">Product Description:</label>
-                                    <input type="text" id="description" v-model="product.description"
-                                        class="form-control" readonly>
-                                </div>
-                                <div class="form-group">
-                                    <label for="price">Product Price (SAR):</label>
-                                    <input type="number" id="price" v-model="product.price" class="form-control"
-                                        readonly>
-                                </div>
-                                <div class="form-group">
-                                    <label for="quantity">Quantity:</label>
-                                    <input type="number" id="quantity" v-model="product.quantity" class="form-control">
-                                </div>
-
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button @click="addToCart(product)" type="button" class="btn btn-primary">Save
-                                    changes</button>
-                            </div>
+                        <p class="card-text">
+                            <strong>{{ product.price }} ر.س</strong>
+                        </p>
+                        <!-- Quantity Input -->
+                        <div class="quantity">
+                            <label for="quantity">الكمية:</label>
+                            <input
+                                type="number"
+                                v-model="product.quantity"
+                                min="1"
+                                class="form-control"
+                                id="quantity"
+                            />
                         </div>
+                        <button
+                            class="btn btn-primary"
+                            @click="addToCart(product.id, product.quantity)"
+                        >
+                            أضف إلى السلة
+                        </button>
                     </div>
                 </div>
             </div>
@@ -59,28 +41,49 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
 
 export default {
+    props: ["id"],
     data() {
         return {
+            categoryName: "",
             products: [],
         };
     },
-    methods: {
-        fetchProducts() {
-            axios.get('/products').then(response => {
-                this.products = response.data;
-            });
-        },
-        addToCart(product) {
-            axios.post('/cart', { product_id: product.id }).then(() => {
-                alert('Product added to cart!');
-            });
-        },
+    async created() {
+        try {
+            // Fetch category name
+            const categoryResponse = await axios.get(`/categories/${this.id}`);
+            this.categoryName = categoryResponse.data.name;
+
+            // Fetch products in category
+            const productsResponse = await axios.get(
+                `/categories/${this.id}/products`
+            );
+            this.products = productsResponse.data;
+        } catch (error) {
+            console.error("Error fetching category or products:", error);
+        }
     },
-    mounted() {
-        this.fetchProducts();
+    methods: {
+        async addToCart(productId, quantity) {
+            if (quantity < 1 || isNaN(quantity)) {
+                alert("الكمية يجب أن تكون أكبر من 0");
+                return;
+            }
+
+            try {
+                const response = await axios.post("/cart", {
+                    product_id: productId,
+                    quantity: quantity,
+                });
+
+                alert(response.data.message);
+            } catch (error) {
+                console.error("Error adding product to cart:", error);
+            }
+        },
     },
 };
 </script>
