@@ -43,7 +43,10 @@ class OrderController extends Controller
             $html = view('invoice', ['order' => $order])->render();
 
             // Create an instance of Mpdf
-            $mpdf = new Mpdf();
+            $mpdf = new Mpdf([
+                'margin_right' => 0, // Right margin
+                'margin_left' => 0,  // Left margin
+            ]);
 
             // Write the HTML to the PDF
             $mpdf->WriteHTML($html);
